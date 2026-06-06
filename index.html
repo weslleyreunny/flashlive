@@ -67,14 +67,12 @@
             );
         }
 
-        ComfyJS.onCommand = (user, command, message, flags) => {
-            if (flags.broadcaster || flags.mod || flags.vip) {
-                if (command === "flash") {
-                    triggerFlash();
-                }
-                if (command === "smoke") {
-                    triggerSmoke();
-                }
+        ComfyJS.onReward = (user, reward, cost, message, extra) => {
+            if (reward === "Flashbang") {
+                triggerFlash();
+            }
+            if (reward === "Smoke") {
+                triggerSmoke();
             }
         };
 
