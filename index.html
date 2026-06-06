@@ -68,10 +68,12 @@
         }
 
         ComfyJS.onReward = (user, reward, cost, message, extra) => {
-            if (reward === "Flashbang") {
+            const rewardName = reward.toLowerCase();
+            
+            if (rewardName === "flashbang") {
                 triggerFlash();
             }
-            if (reward === "Smoke") {
+            if (rewardName === "smoke") {
                 triggerSmoke();
             }
         };
