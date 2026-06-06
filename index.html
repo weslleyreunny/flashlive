@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Tactical Blindness Overlay</title>
+    <script src="https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: transparent;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+        }
+        
+        #flash-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            opacity: 0;
+            z-index: 9999;
+        }
+        
+        #smoke-overlay {
+            position: absolute;
+            bottom: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200vw;
+            height: 200vh;
+            background: radial-gradient(circle, rgba(130,135,140,0.98) 0%, rgba(100,105,110,0.85) 30%, rgba(80,85,90,0) 65%);
+            opacity: 0;
+            z-index: 9998;
+        }
+    </style>
+</head>
+<body>
+    <div id="flash-overlay"></div>
+    <div id="smoke-overlay"></div>
+
+    <script>
+        const channel = "SEU_CANAL_AQUI";
+
+        function triggerFlash() {
+            gsap.killTweensOf("#flash-overlay");
+            gsap.fromTo("#flash-overlay", 
+                { opacity: 1 }, 
+                { opacity: 0, duration: 4.5, ease: "power2.out" }
+            );
+        }
+
+        function triggerSmoke() {
+            gsap.killTweensOf("#smoke-overlay");
+            gsap.fromTo("#smoke-overlay",
+                { opacity: 0, scale: 0.5, bottom: "-50%" },
+                { opacity: 1, scale: 1.2, bottom: "-10%", duration: 2.5, ease: "power1.out",
+                  onComplete: () => {
+                      gsap.to("#smoke-overlay", { opacity: 0, duration: 6, delay: 4, ease: "power2.inOut" });
+                  }
+                }
+            );
+        }
+
+        ComfyJS.onCommand = (user, command, message, flags) => {
+            if (flags.broadcaster || flags.mod || flags.vip) {
+                if (command === "flash") {
+                    triggerFlash();
+                }
+                if (command === "smoke") {
+                    triggerSmoke();
+                }
+            }
+        };
+
+        ComfyJS.Init(channel);
+    </script>
+</body>
+</html>
