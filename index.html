@@ -26,58 +26,19 @@
             opacity: 0;
             z-index: 9999;
         }
-        
-        #smoke-overlay {
-            position: absolute;
-            bottom: -50%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200vw;
-            height: 200vh;
-            background: radial-gradient(circle, rgba(130,135,140,0.98) 0%, rgba(100,105,110,0.85) 30%, rgba(80,85,90,0) 65%);
-            opacity: 0;
-            z-index: 9998;
-        }
-
-        /* PAINEL DE DEBUG PARA TESTES NO OBS */
-        #debug-panel {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            color: #00ff00;
-            font-family: monospace;
-            font-size: 12px;
-            padding: 10px;
-            border-radius: 8px;
-            z-index: 10000;
-            max-width: 300px;
-            word-wrap: break-word;
-        }
     </style>
 </head>
 <body>
     <div id="flash-overlay"></div>
-    <div id="smoke-overlay"></div>
-    
-    <div id="debug-panel">Aguardando conexão com a Twitch...</div>
 
     <script>
-        const channel = "reunny"; // Certifique-se de que está o nome correto
+        const channel = "reunny";
         
         const flashAudio = new Audio("flash.mp3");
-        const smokeAudio = new Audio("smoke.mp3");
-
-        // Função para escrever na tela e descobrirmos o erro
-        function logDebug(message) {
-            const painel = document.getElementById("debug-panel");
-            painel.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}<br>` + painel.innerHTML;
-        }
 
         function triggerFlash() {
-            logDebug("Ativando animação FLASH");
             flashAudio.currentTime = 0;
-            flashAudio.play().catch(e => logDebug("Erro no áudio flash: " + e));
+            flashAudio.play().catch(()=>{});
             
             gsap.killTweensOf("#flash-overlay");
             gsap.fromTo("#flash-overlay", 
@@ -86,47 +47,11 @@
             );
         }
 
-        function triggerSmoke() {
-            logDebug("Ativando animação SMOKE");
-            smokeAudio.currentTime = 0;
-            smokeAudio.play().catch(e => logDebug("Erro no áudio smoke: " + e));
-            
-            gsap.killTweensOf("#smoke-overlay");
-            gsap.fromTo("#smoke-overlay",
-                { opacity: 0, scale: 0.5, bottom: "-50%" },
-                { opacity: 1, scale: 1.2, bottom: "-10%", duration: 2.5, ease: "power1.out",
-                  onComplete: () => {
-                      gsap.to("#smoke-overlay", { opacity: 0, duration: 6, delay: 4, ease: "power2.inOut" });
-                  }
-                }
-            );
-        }
-
-        // Verifica se conseguiu conectar ao canal
-        ComfyJS.onConnected = (address, port, isSecure) => {
-            logDebug(`Conectado com sucesso ao canal: ${channel}`);
-        };
-
-        ComfyJS.onReward = (user, reward, cost, message, extra) => {
-            // Imprime exatamente o nome do resgate que a Twitch enviou
-            logDebug(`Resgate recebido: "${reward}" por ${user}`);
-            
-            const rewardName = reward.toLowerCase();
-            
-            if (rewardName === "flashbang" || rewardName === "bang") {
-                triggerFlash();
-            }
-            if (rewardName === "smoke" || rewardName === "fumaça" || rewardName === "fumaca") {
-                triggerSmoke();
-            }
-        };
-
-        // Captura o chat normal para termos certeza que a leitura está funcionando
         ComfyJS.onChat = (user, message, flags, self, extra) => {
-            logDebug(`Chat normal lido: ${user}: ${message}`);
-            // Fallback caso a Twitch envie como mensagem normal mas com a flag de recompensa
             if (flags.customReward) {
-                logDebug(`ATENÇÃO: Recompensa detectada via chat normal. ID: ${extra.customRewardId}`);
+                if (extra.customRewardId === "f7b34404-08fd-4719-b47a-e1461fd33916") {
+                    triggerFlash();
+                }
             }
         };
 
