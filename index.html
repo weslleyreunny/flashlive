@@ -46,8 +46,14 @@
 
     <script>
         const channel = "reunny";
+        
+        const flashAudio = new Audio("flash.mp3");
+        const smokeAudio = new Audio("smoke.mp3");
 
         function triggerFlash() {
+            flashAudio.currentTime = 0;
+            flashAudio.play().catch(()=>{});
+            
             gsap.killTweensOf("#flash-overlay");
             gsap.fromTo("#flash-overlay", 
                 { opacity: 1 }, 
@@ -56,6 +62,9 @@
         }
 
         function triggerSmoke() {
+            smokeAudio.currentTime = 0;
+            smokeAudio.play().catch(()=>{});
+            
             gsap.killTweensOf("#smoke-overlay");
             gsap.fromTo("#smoke-overlay",
                 { opacity: 0, scale: 0.5, bottom: "-50%" },
@@ -70,10 +79,10 @@
         ComfyJS.onReward = (user, reward, cost, message, extra) => {
             const rewardName = reward.toLowerCase();
             
-            if (rewardName === "flashbang") {
+            if (rewardName === "flashbang" || rewardName === "bang") {
                 triggerFlash();
             }
-            if (rewardName === "smoke") {
+            if (rewardName === "smoke" || rewardName === "fumaça" || rewardName === "fumaca") {
                 triggerSmoke();
             }
         };
