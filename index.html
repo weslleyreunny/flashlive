@@ -15,6 +15,19 @@
             height: 100vh;
             pointer-events: none;
         }
+
+        #vfx-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 150px rgba(0, 0, 0, 1);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            opacity: 0;
+            z-index: 9998;
+        }
         
         #flash-overlay {
             position: absolute;
@@ -26,31 +39,85 @@
             opacity: 0;
             z-index: 9999;
         }
+
+        #culprit-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            text-align: center;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #culprit-name {
+            font-family: 'Segoe UI', Impact, sans-serif;
+            font-size: 50px;
+            font-weight: 900;
+            color: #111;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+
+        #culprit-msg {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-top: -5px;
+        }
     </style>
 </head>
 <body>
+    <div id="vfx-overlay"></div>
     <div id="flash-overlay"></div>
+    <div id="culprit-container">
+        <div id="culprit-name"></div>
+        <div id="culprit-msg">jogou a bang</div>
+    </div>
 
     <script>
         const channel = "reunny";
         
         const flashAudio = new Audio("flash.mp3");
 
-        function triggerFlash() {
+        function triggerFlash(user) {
+            document.getElementById("culprit-name").innerText = user;
+
             flashAudio.currentTime = 0;
             flashAudio.play().catch(()=>{});
             
             gsap.killTweensOf("#flash-overlay");
+            gsap.killTweensOf("#vfx-overlay");
+            gsap.killTweensOf("#culprit-container");
+
+            gsap.fromTo("#vfx-overlay", 
+                { opacity: 1 }, 
+                { opacity: 0, duration: 6.5, ease: "power2.out" }
+            );
+
             gsap.fromTo("#flash-overlay", 
                 { opacity: 1 }, 
-                { opacity: 0, duration: 4.5, ease: "power2.out" }
+                { opacity: 0, duration: 3.5, ease: "power3.out" }
+            );
+
+            gsap.fromTo("#culprit-container",
+                { opacity: 1, scale: 0.8 },
+                { opacity: 0, scale: 1.1, duration: 2.5, ease: "power1.inOut", delay: 0.2 }
             );
         }
 
         ComfyJS.onChat = (user, message, flags, self, extra) => {
             if (flags.customReward) {
                 if (extra.customRewardId === "f7b34404-08fd-4719-b47a-e1461fd33916") {
-                    triggerFlash();
+                    triggerFlash(user);
                 }
             }
         };
