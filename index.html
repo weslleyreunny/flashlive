@@ -122,6 +122,12 @@
             }
         };
 
+        ComfyJS.onCommand = (user, command, message, flags) => {
+            if (flags.broadcaster && command === "testbang") {
+                triggerFlash(user);
+            }
+        };
+
         ComfyJS.Init(channel);
     </script>
 </body>
