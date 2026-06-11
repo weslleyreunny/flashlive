@@ -114,22 +114,11 @@
             );
         }
 
-        // Evento de Resgate por Pontos
         ComfyJS.onChat = (user, message, flags, self, extra) => {
             if (flags.customReward) {
                 if (extra.customRewardId === "f7b34404-08fd-4719-b47a-e1461fd33916") {
                     triggerFlash(user);
                 }
-            }
-        };
-
-        // Evento de Comando no Chat (!testbang)
-        ComfyJS.onCommand = (user, command, message, flags) => {
-            const cmd = command.toLowerCase();
-            const isBroadcaster = flags.broadcaster || user.toLowerCase() === channel.toLowerCase();
-
-            if (isBroadcaster && cmd === "testbang") {
-                triggerFlash(user);
             }
         };
 
